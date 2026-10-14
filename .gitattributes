@@ -1,0 +1,12 @@
+# Normalize all text files to LF in the repository, regardless of OS.
+* text=auto eol=lf
+
+# Explicitly mark common binary types.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.joblib binary
+*.pkl binary
+*.parquet binary
