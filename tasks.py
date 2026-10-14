@@ -48,6 +48,26 @@ def test(c, cov=True):
 
 
 @task
+def download_data(c, force=False):
+    """Download + verify raw datasets against data/manifest.sha256."""
+    cmd = f"{PY} -m hinglish_mlops.data.download"
+    if force:
+        cmd += " --force"
+    c.run(cmd)
+
+
+@task
+def prepare_data(c):
+    """Clean + split datasets; write reports/data_card.md and data_stats.json."""
+    c.run(f"{PY} -m hinglish_mlops.data.prepare")
+
+
+@task(download_data, prepare_data)
+def data(c):
+    """Download and prepare all datasets (convenience wrapper)."""
+
+
+@task
 def precommit(c):
     """Run all pre-commit hooks against every file."""
     c.run(f"{PY} -m pre_commit run --all-files")

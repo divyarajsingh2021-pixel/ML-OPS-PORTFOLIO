@@ -1,0 +1,97 @@
+{
+  "splits": {
+    "train": {
+      "n": 13854,
+      "class_counts": {
+        "negative": 4071,
+        "neutral": 5211,
+        "positive": 4572
+      },
+      "mean_tokens": 19.38,
+      "median_tokens": 20.0,
+      "max_tokens": 54
+    },
+    "val": {
+      "n": 2932,
+      "class_counts": {
+        "negative": 867,
+        "neutral": 1099,
+        "positive": 966
+      },
+      "mean_tokens": 19.36,
+      "median_tokens": 20.0,
+      "max_tokens": 36
+    },
+    "test": {
+      "n": 2987,
+      "class_counts": {
+        "negative": 898,
+        "neutral": 1094,
+        "positive": 995
+      },
+      "mean_tokens": 19.49,
+      "median_tokens": 20.0,
+      "max_tokens": 37
+    },
+    "shae_eval": {
+      "n": 3181,
+      "class_counts": {
+        "negative": 1421,
+        "neutral": 768,
+        "positive": 992
+      },
+      "mean_tokens": 14.13,
+      "median_tokens": 10.0,
+      "max_tokens": 245
+    }
+  },
+  "filters": {
+    "train": {
+      "empty_removed": 0,
+      "duplicate_removed": 146,
+      "cross_split_removed": 0
+    },
+    "val": {
+      "empty_removed": 0,
+      "duplicate_removed": 9,
+      "cross_split_removed": 59
+    },
+    "test": {
+      "empty_removed": 0,
+      "duplicate_removed": 6,
+      "cross_split_removed": 7
+    },
+    "shae_eval": {
+      "empty_removed": 0,
+      "duplicate_removed": 9,
+      "overlap_with_sentimix_removed": 0
+    }
+  },
+  "sources": [
+    [
+      "sentimix/train.txt",
+      "https://huggingface.co/datasets/RTT1/SentiMix/resolve/main/train_14k_split_conll.txt",
+      "9b1118ad0a3e46a909e0e380bfa289b8fc748f4e7fca24871129e3a22dd36b80"
+    ],
+    [
+      "sentimix/dev.txt",
+      "https://huggingface.co/datasets/RTT1/SentiMix/resolve/main/dev_3k_split_conll.txt",
+      "e4dc583ed95e892669527b864aac01b86d990aee59d5fdc91a5e615e0f5f00a0"
+    ],
+    [
+      "sentimix/test.txt",
+      "https://huggingface.co/datasets/RTT1/SentiMix/resolve/main/Hindi_test_unalbelled_conll_updated.txt",
+      "3bfb1c33d2429db79e33a3eab0823e2c3597eada2afbbed5070468c8f4262fcd"
+    ],
+    [
+      "sentimix/test_labels.csv",
+      "https://huggingface.co/datasets/RTT1/SentiMix/resolve/main/test_labels_hinglish.txt",
+      "6ce8340f8c8b20e81cccb40265ebfcde00b4de0423651a0d7ebdd5a75fc884ed"
+    ],
+    [
+      "shae2977/yt_hinglish_comments_dataset.csv",
+      "https://huggingface.co/datasets/shae2977/hinglish-youtube-sentiments-dataset/resolve/main/yt_hinglish_comments_dataset.csv",
+      "07de7acda7aad8dde6e55797711c6d5de6b1380a142b1a348cc7b0ab07f19fc6"
+    ]
+  ]
+}
