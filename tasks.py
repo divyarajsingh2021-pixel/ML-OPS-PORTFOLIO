@@ -105,6 +105,13 @@ def serve(c, port=8000, host="127.0.0.1"):
 
 
 @task
+def monitor(c, current="val", fail_on_drift=False):
+    """Write an Evidently drift report (current split vs train) under reports/."""
+    flag = " --fail-on-drift" if fail_on_drift else ""
+    c.run(f"{PY} -m hinglish_mlops.monitoring --current {current}{flag}")
+
+
+@task
 def precommit(c):
     """Run all pre-commit hooks against every file."""
     c.run(f"{PY} -m pre_commit run --all-files")

@@ -45,6 +45,7 @@ mlflow.db-shm
 # ------------------------------------------------------------------ Reports (keep figures/metrics small & curated)
 reports/figures/*.png
 !reports/figures/.gitkeep
+reports/drift_report*.html
 
 # ------------------------------------------------------------------ Secrets
 .env

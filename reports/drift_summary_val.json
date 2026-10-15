@@ -1,0 +1,44 @@
+{
+  "dataset_drift": false,
+  "drift_share_threshold": 0.5,
+  "drifted_column_count": 0,
+  "drifted_column_share": 0.0,
+  "columns": {
+    "text_length": {
+      "score": 0.02255354137410378,
+      "method": "Wasserstein distance (normed)",
+      "threshold": 0.1,
+      "drift_detected": false
+    },
+    "word_count": {
+      "score": 0.023974765375188684,
+      "method": "Wasserstein distance (normed)",
+      "threshold": 0.1,
+      "drift_detected": false
+    },
+    "avg_word_length": {
+      "score": 0.018975292972775896,
+      "method": "Wasserstein distance (normed)",
+      "threshold": 0.1,
+      "drift_detected": false
+    },
+    "digit_share": {
+      "score": 0.04191197082695714,
+      "method": "Wasserstein distance (normed)",
+      "threshold": 0.1,
+      "drift_detected": false
+    },
+    "special_char_share": {
+      "score": 0.032047217384007426,
+      "method": "Wasserstein distance (normed)",
+      "threshold": 0.1,
+      "drift_detected": false
+    },
+    "label": {
+      "score": 0.0014617754115700595,
+      "method": "Jensen-Shannon distance",
+      "threshold": 0.1,
+      "drift_detected": false
+    }
+  }
+}
