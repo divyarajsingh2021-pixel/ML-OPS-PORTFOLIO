@@ -1,0 +1,113 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONUTF8: "1"
+
+jobs:
+  quality:
+    name: lint + format + pre-commit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project with dev extras
+        run: python -m pip install -e ".[dev]"
+      - name: Ruff lint
+        run: python -m ruff check src tests
+      - name: Ruff format check
+        run: python -m ruff format --check src tests
+      - name: Pre-commit hooks
+        run: python -m pre_commit run --all-files --show-diff-on-failure
+
+  tests:
+    name: tests (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project with dev extras
+        run: python -m pip install -e ".[dev]"
+      - name: Run tests with coverage
+        run: >-
+          python -m pytest
+          --cov=hinglish_mlops
+          --cov-report=term-missing
+          --cov-report=xml
+          --cov-fail-under=80
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-py${{ matrix.python-version }}
+          path: coverage.xml
+
+  pipeline:
+    name: end-to-end pipeline (real data)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install project with dev extras
+        run: python -m pip install -e ".[dev]"
+      - name: Download data and verify checksums
+        run: python -m hinglish_mlops.data.download
+      - name: Clean and split data
+        run: python -m hinglish_mlops.data.prepare
+      - name: Train the baseline model
+        run: python -m hinglish_mlops.train --model baseline_tfidf_logreg --no-track
+      - name: Check for drift on the validation split
+        run: python -m hinglish_mlops.monitoring --current val --fail-on-drift
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-reports
+          path: reports/
+
+  package:
+    name: build sdist + wheel
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install build frontend
+        run: python -m pip install build
+      - name: Build distributions
+        run: python -m build

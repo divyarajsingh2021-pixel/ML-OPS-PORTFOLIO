@@ -35,7 +35,7 @@
       "drift_detected": true
     },
     "label": {
-      "score": 0.12441309136611035,
+      "score": 0.12441309136611034,
       "method": "Jensen-Shannon distance",
       "threshold": 0.1,
       "drift_detected": true
