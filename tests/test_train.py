@@ -55,7 +55,9 @@ def test_run_writes_model_and_metrics(tmp_path, model_name):
     processed = tmp_path / "processed"
     _write_processed(processed)
 
-    payload = train.run(model_name, processed, tmp_path / "models", tmp_path / "reports")
+    payload = train.run(
+        model_name, processed, tmp_path / "models", tmp_path / "reports", track=False
+    )
 
     assert (tmp_path / "models" / train.model_artifact_name(model_name)).exists()
     metrics_path = tmp_path / "reports" / train.metrics_artifact_name(model_name)

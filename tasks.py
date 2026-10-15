@@ -91,6 +91,14 @@ def compare(c):
 
 
 @task
+def mlflow_ui(c):
+    """Launch the MLflow tracking UI for the local mlflow.db store (port 5000)."""
+    from hinglish_mlops.tracking import DEFAULT_TRACKING_URI
+
+    c.run(f'{PY} -m mlflow ui --backend-store-uri "{DEFAULT_TRACKING_URI}"')
+
+
+@task
 def precommit(c):
     """Run all pre-commit hooks against every file."""
     c.run(f"{PY} -m pre_commit run --all-files")
