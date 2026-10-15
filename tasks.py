@@ -68,6 +68,12 @@ def data(c):
 
 
 @task
+def train_baseline(c):
+    """Train + evaluate the TF-IDF (word) + logistic-regression baseline."""
+    c.run(f"{PY} -m hinglish_mlops.train")
+
+
+@task
 def precommit(c):
     """Run all pre-commit hooks against every file."""
     c.run(f"{PY} -m pre_commit run --all-files")
