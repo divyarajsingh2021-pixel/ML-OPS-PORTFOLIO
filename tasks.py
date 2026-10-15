@@ -112,6 +112,18 @@ def monitor(c, current="val", fail_on_drift=False):
 
 
 @task
+def figures(c, model="improved_tfidf_svc", split="test"):
+    """Render the confusion-matrix figure for a trained model."""
+    c.run(f"{PY} -m hinglish_mlops.figures --model {model} --split {split}")
+
+
+@task
+def demo(c, port=8501):
+    """Launch the Streamlit demo (needs the demo extra: pip install -e '.[demo]')."""
+    c.run(f"{PY} -m streamlit run demo/app.py --server.port {port}")
+
+
+@task
 def precommit(c):
     """Run all pre-commit hooks against every file."""
     c.run(f"{PY} -m pre_commit run --all-files")

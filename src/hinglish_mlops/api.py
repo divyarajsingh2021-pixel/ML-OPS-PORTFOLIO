@@ -96,7 +96,7 @@ def softmax(values: np.ndarray) -> np.ndarray:
     return exp / exp.sum()
 
 
-def _class_scores(pipeline: Any, text: str) -> dict[str, float]:
+def class_scores(pipeline: Any, text: str) -> dict[str, float]:
     """Per-class scores, falling back to softmax over SVM decision values."""
     proba = getattr(pipeline, "predict_proba", None)
     if callable(proba):
@@ -181,7 +181,7 @@ def _predict(store: ModelStore, text: str) -> Prediction:
         pipeline = store.get()
     except FileNotFoundError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
-    scores = _class_scores(pipeline, text)
+    scores = class_scores(pipeline, text)
     label = str(pipeline.predict([text])[0])
     return Prediction(text=text, label=label, label_id=LABEL2ID.get(label, -1), scores=scores)
 
