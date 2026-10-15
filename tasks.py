@@ -99,6 +99,12 @@ def mlflow_ui(c):
 
 
 @task
+def serve(c, port=8000, host="127.0.0.1"):
+    """Run the FastAPI inference service with uvicorn (docs at /docs)."""
+    c.run(f"{PY} -m uvicorn hinglish_mlops.api:app --host {host} --port {port}")
+
+
+@task
 def precommit(c):
     """Run all pre-commit hooks against every file."""
     c.run(f"{PY} -m pre_commit run --all-files")
