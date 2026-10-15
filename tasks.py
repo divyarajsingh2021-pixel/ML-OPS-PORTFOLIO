@@ -70,7 +70,24 @@ def data(c):
 @task
 def train_baseline(c):
     """Train + evaluate the TF-IDF (word) + logistic-regression baseline."""
-    c.run(f"{PY} -m hinglish_mlops.train")
+    c.run(f"{PY} -m hinglish_mlops.train --model baseline_tfidf_logreg")
+
+
+@task
+def train_improved(c):
+    """Train + evaluate the TF-IDF (word + char) + linear-SVM model."""
+    c.run(f"{PY} -m hinglish_mlops.train --model improved_tfidf_svc")
+
+
+@task(train_baseline, train_improved)
+def train(c):
+    """Train + evaluate all registered models."""
+
+
+@task
+def compare(c):
+    """Write reports/model_comparison.md from the metrics reports."""
+    c.run(f"{PY} -m hinglish_mlops.compare")
 
 
 @task

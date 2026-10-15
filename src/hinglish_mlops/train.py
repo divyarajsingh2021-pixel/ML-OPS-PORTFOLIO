@@ -1,14 +1,14 @@
-"""Train and evaluate the baseline sentiment model.
+"""Train and evaluate a registered sentiment model.
 
 CLI::
 
-    python -m hinglish_mlops.train
+    python -m hinglish_mlops.train --model baseline_tfidf_logreg
+    python -m hinglish_mlops.train --model improved_tfidf_svc
 
-Fits TF-IDF (word) + logistic regression on the processed training split,
-evaluates on train/val/test and the out-of-distribution eval set, then writes
-the fitted pipeline to ``models/baseline.joblib`` and metrics to
-``reports/baseline_metrics.json`` (both git-ignored except the JSON report,
-which is committed).
+Fits the chosen model on the processed training split, evaluates on
+train/val/test and the out-of-distribution eval set, then writes the fitted
+pipeline to ``models/<model>.joblib`` (git-ignored) and metrics to
+``reports/<model>_metrics.json`` (committed).
 """
 
 from __future__ import annotations
@@ -24,14 +24,21 @@ from . import __version__
 from .config import MODELS_DIR, PROCESSED_DIR, RANDOM_SEED, REPORTS_DIR
 from .dataset import EVAL_NAME, load_all
 from .evaluation import classification_metrics
-from .modeling import build_baseline_pipeline, save_model
-
-MODEL_NAME = "baseline_tfidf_logreg"
-MODEL_FILE = "baseline.joblib"
-METRICS_FILE = "baseline_metrics.json"
+from .modeling import BASELINE_NAME, MODEL_BUILDERS, build_model, save_model
 
 
-def train_baseline(
+def model_artifact_name(model_name: str) -> str:
+    """Filename of the fitted model artifact for ``model_name``."""
+    return f"{model_name}.joblib"
+
+
+def metrics_artifact_name(model_name: str) -> str:
+    """Filename of the metrics report for ``model_name``."""
+    return f"{model_name}_metrics.json"
+
+
+def train_model(
+    model_name: str,
     train: pd.DataFrame,
     val: pd.DataFrame,
     test: pd.DataFrame,
@@ -39,8 +46,8 @@ def train_baseline(
     *,
     random_state: int = RANDOM_SEED,
 ) -> tuple[object, dict[str, dict[str, object]]]:
-    """Fit the baseline and evaluate it on every provided split."""
-    pipeline = build_baseline_pipeline(random_state=random_state)
+    """Fit a registered model and evaluate it on every provided split."""
+    pipeline = build_model(model_name, random_state)
     pipeline.fit(train["text_clean"], train["label"])
 
     sets = {"train": train, "val": val, "test": test}
@@ -55,40 +62,49 @@ def train_baseline(
 
 
 def run(
+    model_name: str = BASELINE_NAME,
     processed_dir: Path = PROCESSED_DIR,
     model_dir: Path = MODELS_DIR,
     reports_dir: Path = REPORTS_DIR,
 ) -> dict[str, object]:
-    """Load data, train the baseline and write model + metrics artifacts."""
+    """Load data, train a model and write model + metrics artifacts."""
     splits, eval_frame = load_all(processed_dir)
-    pipeline, metrics = train_baseline(splits["train"], splits["val"], splits["test"], eval_frame)
+    pipeline, metrics = train_model(
+        model_name, splits["train"], splits["val"], splits["test"], eval_frame
+    )
 
-    save_model(pipeline, model_dir / MODEL_FILE)
+    save_model(pipeline, model_dir / model_artifact_name(model_name))
     payload: dict[str, object] = {
-        "model": MODEL_NAME,
+        "model": model_name,
         "version": __version__,
         "metrics": metrics,
     }
     reports_dir.mkdir(parents=True, exist_ok=True)
-    (reports_dir / METRICS_FILE).write_text(
+    (reports_dir / metrics_artifact_name(model_name)).write_text(
         json.dumps(payload, indent=2) + "\n", encoding="utf-8", newline="\n"
     )
     return payload
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Train the baseline sentiment model.")
+    parser = argparse.ArgumentParser(description="Train a sentiment model.")
+    parser.add_argument(
+        "--model",
+        default=BASELINE_NAME,
+        choices=sorted(MODEL_BUILDERS),
+        help="registered model to train",
+    )
     parser.add_argument("--processed-dir", type=Path, default=PROCESSED_DIR)
     parser.add_argument("--model-dir", type=Path, default=MODELS_DIR)
     parser.add_argument("--reports-dir", type=Path, default=REPORTS_DIR)
     args = parser.parse_args(argv)
 
-    payload = run(args.processed_dir, args.model_dir, args.reports_dir)
+    payload = run(args.model, args.processed_dir, args.model_dir, args.reports_dir)
     print(f"model: {payload['model']} v{payload['version']}")
     for name, info in payload["metrics"].items():
         print(f"{name:>10}: acc {info['accuracy']:.3f}  macro-F1 {info['macro_f1']:.3f}")
-    print(f"Saved model to {args.model_dir / MODEL_FILE}")
-    print(f"Saved metrics to {args.reports_dir / METRICS_FILE}")
+    print(f"Saved model to {args.model_dir / model_artifact_name(args.model)}")
+    print(f"Saved metrics to {args.reports_dir / metrics_artifact_name(args.model)}")
     return 0
 
 
