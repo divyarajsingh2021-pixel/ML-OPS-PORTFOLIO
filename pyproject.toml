@@ -44,7 +44,8 @@ demo = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/your-username/hinglish-mlops"
+Homepage = "https://github.com/divyarajsingh2021-pixel/ML-OPS-PORTFOLIO"
+Repository = "https://github.com/divyarajsingh2021-pixel/ML-OPS-PORTFOLIO"
 
 [tool.setuptools]
 package-dir = { "" = "src" }

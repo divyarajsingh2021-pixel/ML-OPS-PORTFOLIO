@@ -41,8 +41,8 @@ Numbers come from [`reports/model_comparison.md`](reports/model_comparison.md)
 ## Quickstart (~10 minutes)
 
 ```bash
-git clone <your-fork-url> hinglish-mlops
-cd hinglish-mlops
+git clone https://github.com/divyarajsingh2021-pixel/ML-OPS-PORTFOLIO.git
+cd ML-OPS-PORTFOLIO
 
 # 1. environment
 python -m venv .venv

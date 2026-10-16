@@ -23,7 +23,7 @@ import requests
 from ..config import MANIFEST_PATH, RAW_DIR
 from .sources import SOURCES
 
-USER_AGENT = "hinglish-mlops/0.1 (+https://github.com/your-username/hinglish-mlops)"
+USER_AGENT = "hinglish-mlops/0.1 (+https://github.com/divyarajsingh2021-pixel/ML-OPS-PORTFOLIO)"
 CHUNK_SIZE = 1 << 15  # 32 KiB
 
 
